@@ -1,10 +1,20 @@
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from scraper import scrape_nafdac_by_nrn
 
 app = FastAPI(
     title="NAFDAC Greenbook Scraper API",
     description="An API to search for drugs in the NAFDAC Greenbook using their Registration Number.",
     version="1.0.0"
+)
+
+# Allow cross-origin requests from browsers (adjust origins for production)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
 )
 
 @app.get("/api/drugs")
