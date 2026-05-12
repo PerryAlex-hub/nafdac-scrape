@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import os
+import platform
 
 def scrape_nafdac_by_nrn(nrn: str):
     """
@@ -19,8 +21,15 @@ def scrape_nafdac_by_nrn(nrn: str):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
     
-    # Initialize the Chrome driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Use system chromium on Linux/Render, otherwise auto-download
+    try:
+        if platform.system() == 'Linux':
+            options.binary_location = '/usr/bin/chromium-browser'
+            driver = webdriver.Chrome(options=options)
+        else:
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    except Exception as e:
+        raise Exception(f"Failed to initialize Chrome driver: {str(e)}. Make sure Chromium is installed.")
     
     all_drugs = []
     

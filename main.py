@@ -15,14 +15,20 @@ def get_drug_by_nrn(nrn: str = Query(..., description="The NAFDAC Registration N
     Returns a list of matching drugs with their full details.
     """
     try:
+        if not nrn or len(nrn.strip()) == 0:
+            raise HTTPException(status_code=400, detail="NRN parameter cannot be empty")
+        
         results = scrape_nafdac_by_nrn(nrn)
         return {
             "success": True,
             "count": len(results),
             "data": results
         }
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
