@@ -17,6 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/ping")
+def ping():
+    """
+    Health check endpoint. Use this in cron jobs or uptime monitors to keep the service alive.
+    Returns immediately without any heavy processing.
+    """
+    return {"status": "ok", "message": "NAFDAC Scraper API is alive"}
+
 @app.get("/api/drugs")
 def get_drug_by_nrn(nrn: str = Query(..., description="The NAFDAC Registration Number (e.g., 04-6969)")):
     """
